@@ -11,44 +11,35 @@ import { LazyModuleLoader } from '@nestjs/core';
 import { User } from './entities/user.entity';
 import { UserModule } from './user.module';
 import { UserService } from './user.service';
+import { Observable } from 'rxjs';
 
 @Controller('users')
 export class UserController {
-  constructor(private lazyModuleLoader: LazyModuleLoader){}
+  constructor(private srv: UserService){}
 
   @Post()
-  async create(@Body() user: User): Promise<User> {
-    const mod = await this.lazyModuleLoader.load(() => UserModule);
-    const serv = mod.get(UserService);
-    return await serv.create(user);
+   create(@Body() user: User): Observable<User> {
+    return this.srv.create(user)
   }
 
 
   @Get(':id')
-  async findOne(@Param() params): Promise<User> {
-    const mod = await this.lazyModuleLoader.load(()=> UserModule)
-    const serv = mod.get(UserService);
-    return await serv.findOne(params.id)
+   findOne(@Param() params): Observable<User> {
+    return this.srv.findOne(params.id);
   }
 
   @Get()
-  async findAll() {
-    const mod = await this.lazyModuleLoader.load(() => UserModule);
-    const serv = mod.get(UserService);
-    return await serv.findAll();
+ findAll() {
+  return this.srv.findAll();
   }
 
   @Delete(':id')
-  async deleteOne(@Param('id')id: number): Promise<User> {
-    const mod = await this.lazyModuleLoader.load(()=> UserModule);
-    const serv = mod.get(UserService);
-    return await serv.deleteOne(id)
+   deleteOne(@Param('id')id: number): Observable<User> {
+    return this.srv.deleteOne(id);
   }
 
   @Patch(':id')
- async updatOne(@Param('id')id: number, @Body() user: User):Promise<User> {
-   const mod = await this.lazyModuleLoader.load(()=> UserModule);
-   const serv = mod.get(UserService);
-  return await serv.updateOne(id, user)
+  updatOne(@Param('id')id: number, @Body() user: User):Observable<User> {
+    return this.srv.updateOne(id , user);
   }
 }
